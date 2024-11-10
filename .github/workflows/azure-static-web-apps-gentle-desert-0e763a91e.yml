@@ -9,6 +9,11 @@ on:
     branches:
       - main
 
+permissions:
+  issues: write
+  contents: read
+  pull-requests: write
+
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
@@ -39,7 +44,7 @@ jobs:
 
       - name: Build And Deploy
         id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE_DESERT_0E763A91E }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
@@ -59,7 +64,7 @@ jobs:
     steps:
       - name: Close Pull Request
         id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE_DESERT_0E763A91E }}
           action: "close"
