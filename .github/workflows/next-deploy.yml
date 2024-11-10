@@ -1,0 +1,44 @@
+name: Build and deploy Next.js app to Azure Web App
+
+on:
+  push:
+    branches:
+      - main  
+  workflow_dispatch:
+
+env:
+  APPLICATION_PUBLISH_PROFILE: ${{ secrets.APP_PUBLISH_PROFILE }}
+  WEBAPP_NAME: "pokedex-app-2"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.10.0"
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Prepare deployment files
+        run: |
+          mv ./build/static ./build/standalone/build
+          mv ./public ./build/standalone
+
+      - name: "Deploy to Azure Web App"
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.WEBAPP_NAME }}
+          slot-name: "Production"
+          publish-profile: ${{ env.APPLICATION_PUBLISH_PROFILE }}
+          package: ./build/standalone
